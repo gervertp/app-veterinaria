@@ -1,0 +1,129 @@
+<section class="duenos-page">
+  <!-- 1. Título y botón para abrir el registro -->
+  <header class="page-heading">
+    <div>
+      <h1>Dueños</h1>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="abrirRegistro()">
+      <i class="bi bi-plus-lg" aria-hidden="true"></i>
+      Registrar nuevo
+    </button>
+  </header>
+
+  <!-- 2. Buscador -->
+  <label for="buscar-duenos" class="visually-hidden">Buscar dueños</label>
+  <div class="input-group table-search">
+    <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
+    <input id="buscar-duenos" type="search" class="form-control" [(ngModel)]="busqueda" (ngModelChange)="pagina = 1" placeholder="Nombre, DNI, celular o correo"
+        autocomplete="off" />
+  </div>
+
+  <!-- 3. Tabla de registros -->
+  <section class="panel" aria-labelledby="list-title">
+    <h2 id="list-title" class="visually-hidden">Dueños registrados</h2>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle mb-0">
+        <caption class="visually-hidden">Registros de dueños y acciones disponibles</caption>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nombres</th>
+            <th scope="col">Apellidos</th>
+            <th scope="col">DNI</th>
+            <th scope="col">Celular</th>
+            <th scope="col">Correo</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dueno of duenosFiltrados | paginar: pagina : porPagina; let i = index">
+            <th scope="row">{{ (pagina - 1) * porPagina + i + 1 }}</th>
+            <td>{{ dueno.nombres }}</td>
+            <td>{{ dueno.apellidos }}</td>
+            <td>{{ dueno.dni }}</td>
+            <td>{{ dueno.telefono }}</td>
+            <td>{{ dueno.correo }}</td>
+            <td>
+              <div class="actions">
+                <button type="button" class="btn btn-warning btn-sm" (click)="editarDueno(dueno)" [attr.aria-label]="'Actualizar a ' + dueno.nombres"
+                    title="Actualizar">
+                  <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" (click)="confirmarEliminacion(dueno)"
+                    [attr.aria-label]="'Eliminar a ' + dueno.nombres" title="Eliminar">
+                  <i class="bi bi-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="duenosFiltrados.length === 0">
+            <td colspan="7" class="empty-state">
+              {{ mensajeVacio }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      <app-paginacion [total]="duenosFiltrados.length" [porPagina]="porPagina" [(pagina)]="pagina" />
+    </div>
+  </section>
+</section>
+
+<!-- Formulario del modal: sirve para registrar y actualizar -->
+<dialog #modalDueno class="dueno-dialog" aria-labelledby="modal-title">
+  <div class="modal-content border-0">
+    <div class="modal-header">
+      <h2 id="modal-title" class="modal-title fs-5">
+        {{ datosDueno.id === 0 ? 'Registrar dueño' : 'Editar dueño' }}
+      </h2>
+      <button type="button" class="btn-close" aria-label="Cerrar formulario" (click)="cerrarModal()"></button>
+    </div>
+    <div class="modal-body">
+      <!-- ngModel conecta cada campo con el objeto de datos del componente -->
+      <form #formulario="ngForm" (ngSubmit)="registrarDueno(formulario.valid ?? false)" novalidate>
+        <div *ngIf="error" class="alert alert-danger" role="alert">{{ error }}</div>
+        <div class="mb-3">
+          <!-- Campo: nombres -->
+          <label for="nombres" class="form-label">Nombres</label>
+          <input id="nombres" class="form-control" name="nombres" [(ngModel)]="datosDueno.nombres" required pattern=".*\S.*" maxlength="80"
+              autocomplete="given-name" />
+        </div>
+        <div class="mb-3">
+          <!-- Campo: apellidos -->
+          <label for="apellidos" class="form-label">Apellidos</label>
+          <input id="apellidos" class="form-control" name="apellidos" [(ngModel)]="datosDueno.apellidos" required pattern=".*\S.*" maxlength="80"
+              autocomplete="family-name" />
+        </div>
+        <div class="mb-3">
+          <!-- Campo: dni -->
+          <label for="dni" class="form-label">DNI</label>
+          <input id="dni" class="form-control" name="dni" [(ngModel)]="datosDueno.dni" required pattern="[0-9]{8}" maxlength="8"
+              inputmode="numeric" />
+        </div>
+        <div class="mb-3">
+          <!-- Campo: telefono -->
+          <label for="telefono" class="form-label">Celular</label>
+          <input id="telefono" type="tel" class="form-control" name="telefono" [(ngModel)]="datosDueno.telefono" required pattern="9[0-9]{8}"
+              maxlength="9" autocomplete="tel" inputmode="numeric" />
+        </div>
+        <div class="mb-4">
+          <!-- Campo: correo -->
+          <label for="correo" class="form-label">Correo electrónico</label>
+          <input id="correo" type="email" class="form-control" name="correo" [(ngModel)]="datosDueno.correo" required email maxlength="120"
+              autocomplete="email" />
+        </div>
+        <!-- Cancelar cierra el modal; guardar envía el formulario -->
+        <div class="modal-footer px-0 pb-0">
+          <button type="button" class="btn btn-outline-secondary" (click)="cerrarModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn" [class.btn-primary]="datosDueno.id === 0" [class.btn-warning]="datosDueno.id !== 0"
+              [disabled]="!formulario.valid">
+            {{ datosDueno.id === 0 ? 'Registrar dueño' : 'Actualizar dueño' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</dialog>

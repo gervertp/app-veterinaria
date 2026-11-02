@@ -1,0 +1,224 @@
+<section class="duenos-page">
+  <!-- 1. Título y botón para abrir el registro -->
+  <header class="page-heading">
+    <h1>Citas</h1>
+    <button type="button" class="btn btn-primary" (click)="abrirRegistro()">
+      <i class="bi bi-plus-lg" aria-hidden="true"></i>
+      Registrar nuevo
+    </button>
+  </header>
+
+  <!-- 2. Buscador -->
+  <label for="buscar-citas" class="visually-hidden">Buscar citas</label>
+  <div class="input-group table-search">
+    <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
+    <input id="buscar-citas" type="search" class="form-control" [(ngModel)]="busqueda" (ngModelChange)="pagina = 1" placeholder="Mascota, fecha, motivo o estado"
+        autocomplete="off" />
+  </div>
+  <!-- 3. Alternar entre tabla y calendario -->
+  <div class="view-switch" role="group" aria-label="Vista de citas">
+    <button type="button" class="btn btn-sm" [class.selected]="vista === 'tabla'" [attr.aria-pressed]="vista === 'tabla'" (click)="vista = 'tabla'">
+      <i class="bi bi-list-ul" aria-hidden="true"></i>
+      Tabla
+    </button>
+    <button type="button" class="btn btn-sm" [class.selected]="vista === 'calendario'" [attr.aria-pressed]="vista === 'calendario'"
+        (click)="vista = 'calendario'">
+      <i class="bi bi-calendar3" aria-hidden="true"></i>
+      Calendario
+    </button>
+  </div>
+  <!-- 4. Tabla de citas -->
+  <section *ngIf="vista === 'tabla'" class="panel" aria-label="Citas registradas">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle mb-0">
+        <caption class="visually-hidden">Citas registradas y acciones disponibles</caption>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Mascota</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Hora</th>
+            <th scope="col">Motivo</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cita of citasFiltradas | paginar: pagina : porPagina; let i = index" [citaProxima]="cita">
+            <th scope="row">{{ (pagina - 1) * porPagina + i + 1 }}</th>
+            <td>{{ nombreMascota(cita.mascotaId) }}</td>
+            <td class="text-nowrap">{{ cita.fecha | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ cita.hora }}</td>
+            <td class="motivo">{{ cita.motivo }}</td>
+            <td>
+              <span class="estado" [class.pendiente]="cita.estado === 'Pendiente'" [class.atendida]="cita.estado === 'Atendida'"
+                  [class.cancelada]="cita.estado === 'Cancelada'">
+                {{ cita.estado }}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                <button *ngIf="cita.estado === 'Pendiente'" type="button" class="btn btn-success btn-sm"
+                    [title]="
+                    puedeAtender(cita)
+                      ? 'Registrar atención'
+                      : 'Disponible desde ' + cita.fecha + ' ' + cita.hora
+                  "
+                    [attr.aria-label]="'Registrar atención de ' + nombreMascota(cita.mascotaId)" (click)="registrarAtencion(cita)">
+                  <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-warning btn-sm" title="Actualizar"
+                    [attr.aria-label]="'Actualizar cita de ' + nombreMascota(cita.mascotaId)" (click)="editarCita(cita)">
+                  <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" title="Eliminar"
+                    [attr.aria-label]="'Eliminar cita de ' + nombreMascota(cita.mascotaId)" (click)="confirmarEliminacion(cita)">
+                  <i class="bi bi-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="citasFiltradas.length === 0">
+            <td colspan="7" class="empty-state">
+              {{ mensajeVacio }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      <app-paginacion [total]="citasFiltradas.length" [porPagina]="porPagina" [(pagina)]="pagina" />
+    </div>
+  </section>
+  <!-- 5. Calendario y agenda del día -->
+  <section *ngIf="vista === 'calendario'" class="calendar-layout" aria-label="Calendario de citas">
+    <div class="panel calendar-panel">
+      <div class="calendar-toolbar">
+        <h2 aria-live="polite">{{ tituloMes }}</h2>
+        <div class="month-controls">
+          <button type="button" class="btn btn-outline-secondary btn-sm" aria-label="Mes anterior" (click)="cambiarMes(-1)">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="irAHoy()">
+            Hoy
+          </button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" aria-label="Mes siguiente" (click)="cambiarMes(1)">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+      <div class="calendar-grid" role="group" [attr.aria-label]="tituloMes">
+        <span *ngFor="let dia of diasSemana" class="weekday" aria-hidden="true">{{ dia }}</span>
+        <div *ngFor="let fecha of diasCalendario" class="calendar-cell">
+          <button *ngIf="fecha" type="button" class="calendar-day" [class.is-today]="esHoy(fecha)" [class.is-selected]="fechaSeleccionada === fecha"
+              [attr.aria-pressed]="fechaSeleccionada === fecha" [attr.aria-current]="esHoy(fecha) ? 'date' : null"
+              [attr.aria-label]="fecha + ': ' + citasDelDia(fecha).length + ' citas'" (click)="fechaSeleccionada = fecha">
+            <span class="day-number">{{ +fecha.slice(-2) }}</span>
+            <span *ngIf="citasDelDia(fecha).length > 0" class="day-count">
+              {{ citasDelDia(fecha).length }}
+              <span class="count-label">
+                {{ citasDelDia(fecha).length === 1 ? 'cita' : 'citas' }}
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <section class="panel day-agenda" aria-labelledby="day-title">
+      <div class="agenda-heading">
+        <h2 id="day-title" aria-live="polite">{{ fechaSeleccionada | date: 'dd/MM/yyyy' }}</h2>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm register-day" (click)="registrarEnFecha()">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        Registrar cita
+      </button>
+      <div class="available-slots">
+        <h3>Horarios disponibles</h3>
+        <p class="small text-secondary">Turnos de 30 min · 09:00 a 18:00</p>
+        <div class="slots">
+          <button *ngFor="let hora of horariosDelDia()" type="button" class="btn btn-outline-secondary btn-sm" (click)="reservarHora(hora)">
+            {{ hora }}
+          </button>
+        </div>
+        <p *ngIf="!horariosDelDia().length" class="small text-secondary mb-0">
+          Sin horarios disponibles.
+        </p>
+      </div>
+      <p *ngIf="citasDelDia(fechaSeleccionada).length === 0" class="day-empty">
+        {{ busqueda.trim() ? 'No se encontraron coincidencias.' : 'Sin citas.' }}
+      </p>
+      <app-cita-card *ngFor="let cita of citasDelDia(fechaSeleccionada)" [cita]="cita" [mascota]="nombreMascota(cita.mascotaId)"
+          [mostrarAtencion]="cita.estado === 'Pendiente'" [atendible]="puedeAtender(cita)" (atender)="registrarAtencion(cita)"
+          (actualizar)="editarCita(cita)" (eliminar)="confirmarEliminacion(cita)" />
+    </section>
+  </section>
+</section>
+
+<!-- Formulario del modal: sirve para registrar y actualizar -->
+<dialog #modalCita class="dueno-dialog" aria-labelledby="cita-title">
+  <div class="modal-content border-0">
+    <div class="modal-header">
+      <h2 id="cita-title" class="modal-title">
+        {{ datosCita.id === 0 ? 'Registrar cita' : 'Editar cita' }}
+      </h2>
+      <button type="button" class="btn-close" aria-label="Cerrar formulario" (click)="cerrarModal()"></button>
+    </div>
+    <div class="modal-body">
+      <!-- ngModel conecta cada campo con el objeto de datos del componente -->
+      <form #formulario="ngForm" (ngSubmit)="registrarCita(formulario.valid ?? false)" novalidate>
+        <div *ngIf="error" class="alert alert-danger" role="alert">{{ error }}</div>
+        <div class="mb-3">
+          <!-- Campo: mascotaId -->
+          <label for="mascotaId" class="form-label">Mascota</label>
+          <select id="mascotaId" class="form-select" name="mascotaId" [(ngModel)]="datosCita.mascotaId" required>
+            <option [ngValue]="null" disabled>Seleccionar</option>
+            <option *ngFor="let mascota of mascotaService.mascotas" [ngValue]="mascota.id">
+              {{ mascota.nombre }} · {{ mascota.especie }} (#{{ mascota.id }})
+            </option>
+          </select>
+        </div>
+        <div class="row">
+          <div class="col-sm-7 mb-3">
+            <!-- Campo: fecha -->
+            <label for="fecha" class="form-label">Fecha</label>
+            <input id="fecha" type="date" class="form-control" name="fecha" [(ngModel)]="datosCita.fecha" (change)="cambiarFecha()" required />
+          </div>
+          <div class="col-sm-5 mb-3">
+            <!-- Campo: hora -->
+            <label for="hora" class="form-label">Hora</label>
+            <select id="hora" class="form-select" name="hora" [(ngModel)]="datosCita.hora" required>
+              <option value="" disabled>Seleccionar</option>
+              <option *ngIf="datosCita.hora && !horasDisponibles.includes(datosCita.hora)" [value]="datosCita.hora">
+                {{ datosCita.hora }} (actual)
+              </option>
+              <option *ngFor="let hora of horasDisponibles" [value]="hora">{{ hora }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <!-- Campo: motivo -->
+          <label for="motivo" class="form-label">Motivo</label>
+          <textarea id="motivo" class="form-control" rows="3" name="motivo" [(ngModel)]="datosCita.motivo" required pattern="[\s\S]*\S[\s\S]*"
+              maxlength="250"></textarea>
+        </div>
+        <div class="mb-4">
+          <!-- Campo: estado -->
+          <label for="estado" class="form-label">Estado</label>
+          <select id="estado" class="form-select" name="estado" [(ngModel)]="datosCita.estado" required>
+            <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+          </select>
+        </div>
+        <!-- Cancelar cierra el modal; guardar envía el formulario -->
+        <div class="modal-footer px-0 pb-0">
+          <button type="button" class="btn btn-outline-secondary" (click)="cerrarModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn" [class.btn-primary]="datosCita.id === 0" [class.btn-warning]="datosCita.id !== 0"
+              [disabled]="!formulario.valid">
+            {{ datosCita.id === 0 ? 'Registrar cita' : 'Actualizar cita' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</dialog>

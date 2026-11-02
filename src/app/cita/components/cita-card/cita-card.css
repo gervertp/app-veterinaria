@@ -1,0 +1,43 @@
+:host {
+  display: block;
+}
+.agenda-item {
+  padding: 20px;
+  border-bottom: 1px solid #e9e7ef;
+}
+.agenda-time {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-bottom: 12px;
+}
+h3 {
+  font-size: 1rem;
+  margin: 0 0 6px;
+}
+p {
+  font-size: 0.85rem;
+  color: #76717e;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.estado {
+  font-size: 0.75rem;
+  padding: 5px 8px;
+  border-radius: 4px;
+}
+.pendiente {
+  background: #fff3dc;
+  color: #946316;
+}
+.atendida {
+  background: #e2f4ec;
+  color: #237a51;
+}
+.cancelada {
+  background: #ffedf0;
+  color: #be354a;
+}

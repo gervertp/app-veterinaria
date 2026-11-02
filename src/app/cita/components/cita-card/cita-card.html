@@ -1,0 +1,15 @@
+<article class="agenda-item" [citaProxima]="cita">
+  <div class="agenda-time">
+    <time [attr.datetime]="cita.fecha + 'T' + cita.hora">{{ cita.fecha | date:'dd/MM/yyyy' }} · {{ cita.hora }}</time>
+    <span class="estado" [class.pendiente]="cita.estado === 'Pendiente'" [class.atendida]="cita.estado === 'Atendida'" [class.cancelada]="cita.estado === 'Cancelada'">{{ cita.estado }}</span>
+  </div>
+  <h3>{{ mascota }}</h3>
+  <p>{{ cita.motivo }}</p>
+  <div *ngIf="editable" class="actions">
+    <button *ngIf="mostrarAtencion" type="button" class="btn btn-success btn-sm"
+        [title]="atendible ? 'Registrar atención' : 'Disponible desde ' + cita.fecha + ' ' + cita.hora"
+        [attr.aria-label]="'Registrar atención de ' + mascota" (click)="atender.emit()"><i class="bi bi-check2-circle" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-warning btn-sm" title="Actualizar" [attr.aria-label]="'Actualizar cita de ' + mascota" (click)="actualizar.emit()"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-danger btn-sm" title="Eliminar" [attr.aria-label]="'Eliminar cita de ' + mascota" (click)="eliminar.emit()"><i class="bi bi-trash" aria-hidden="true"></i></button>
+  </div>
+</article>

@@ -1,0 +1,25 @@
+.filter-bar {
+  max-width: 360px;
+  margin-bottom: 22px;
+}
+.clinical-text {
+  min-width: 180px;
+  max-width: 320px;
+  white-space: pre-wrap;
+}
+.appointments {
+  margin-top: 28px;
+}
+.appointments h2 {
+  margin-bottom: 16px;
+}
+.appointments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+app-cita-card {
+  background: white;
+  border: 1px solid #e9e7ef;
+  border-radius: 8px;
+}

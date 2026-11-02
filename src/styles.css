@@ -1,1 +1,46 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import './bootstrap-icons.css';
+
+:root {
+  --app-primary: #7c4dff;
+  --app-primary-hover: #6c3ee8;
+  --app-primary-soft: #eee7ff;
+  --app-bg: #f4f5fa;
+  --app-surface: #fff;
+  --app-text: #544f5a;
+  --app-heading: #3a3541;
+  --app-muted: #76717e;
+  --app-border: #e9e7ef;
+  --app-shadow: 0 2px 10px #3a35410d;
+}
+body {
+  margin: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+a {
+  color: var(--app-primary);
+}
+.swal2-popup {
+  border-radius: 12px;
+  color: var(--app-heading);
+  font-family: inherit;
+}
+.swal2-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+.swal2-confirm {
+  background: var(--app-primary);
+}
+
+.table-search {
+  max-width: 420px;
+  margin-bottom: 20px;
+}
+.table-search .input-group-text {
+  background: white;
+  border-color: #d6d2dc;
+  color: var(--app-muted);
+}

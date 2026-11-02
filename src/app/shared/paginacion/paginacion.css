@@ -1,0 +1,26 @@
+.paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.resumen {
+  font-size: 0.8rem;
+  color: var(--app-muted);
+}
+.pagination {
+  --bs-pagination-color: var(--app-text);
+  --bs-pagination-hover-color: var(--app-primary);
+  --bs-pagination-focus-color: var(--app-primary);
+  --bs-pagination-focus-box-shadow: 0 0 0 0.15rem #7c4dff26;
+  --bs-pagination-active-bg: var(--app-primary);
+  --bs-pagination-active-border-color: var(--app-primary);
+  --bs-pagination-border-color: var(--app-border);
+  gap: 4px;
+}
+.page-link {
+  min-width: 32px;
+  border-radius: 6px !important;
+  text-align: center;
+}

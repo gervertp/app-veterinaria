@@ -1,0 +1,219 @@
+.duenos-page {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 30px;
+}
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+h1 {
+  font-size: 1.65rem;
+  font-weight: 600;
+  color: var(--app-heading);
+  margin: 0;
+  letter-spacing: -0.4px;
+}
+h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--app-heading);
+  margin: 0;
+}
+.panel {
+  background: white;
+  border: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--app-shadow);
+}
+.page-heading > .btn {
+  white-space: nowrap;
+  font-size: 0.875rem;
+  padding: 11px 19px;
+}
+.page-heading > .btn i {
+  margin-right: 6px;
+}
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--app-heading);
+}
+.form-control,
+.form-select {
+  min-height: 44px;
+  border-color: #d6d2dc;
+  border-radius: 6px;
+  color: var(--app-heading);
+  font-size: 0.9rem;
+}
+.form-control:hover,
+.form-select:hover {
+  border-color: #aaa3b6;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 0.15rem #7c4dff16;
+}
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+.btn-primary {
+  --bs-btn-bg: var(--app-primary);
+  --bs-btn-border-color: var(--app-primary);
+  --bs-btn-hover-bg: var(--app-primary-hover);
+  --bs-btn-hover-border-color: var(--app-primary-hover);
+  --bs-btn-active-bg: var(--app-primary-hover);
+  --bs-btn-active-border-color: var(--app-primary-hover);
+  --bs-btn-disabled-bg: var(--app-primary);
+  --bs-btn-disabled-border-color: var(--app-primary);
+  --bs-btn-focus-shadow-rgb: 124, 77, 255;
+  box-shadow: 0 3px 7px #7c4dff26;
+}
+.btn-outline-secondary {
+  --bs-btn-color: #77717f;
+  --bs-btn-border-color: #d6d2dc;
+  --bs-btn-hover-bg: #f2f0f5;
+  --bs-btn-hover-color: var(--app-heading);
+  --bs-btn-hover-border-color: #bab3c5;
+  --bs-btn-active-bg: #eae6f0;
+  --bs-btn-active-color: var(--app-heading);
+}
+.table {
+  --bs-table-color: var(--app-text);
+  --bs-table-striped-color: var(--app-text);
+  --bs-table-striped-bg: #fcfbfe;
+  --bs-table-border-color: var(--app-border);
+}
+.table th,
+.table td {
+  padding: 16px 22px;
+  font-size: 0.875rem;
+}
+.table thead th {
+  background: #faf9fc;
+  color: #65606d;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.65px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-top: 19px;
+  padding-bottom: 19px;
+}
+.table td {
+  overflow-wrap: anywhere;
+}
+.table tbody th {
+  font-weight: 400;
+  color: var(--app-muted);
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.actions .btn {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  padding: 0;
+  font-size: 1.4rem;
+  border-color: transparent;
+  border-radius: 50%;
+}
+.empty-state {
+  text-align: center;
+  padding: 64px 16px !important;
+  color: var(--app-muted);
+}
+.table-footer {
+  padding: 16px 22px;
+  color: var(--app-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--app-border);
+}
+.dueno-dialog {
+  width: min(530px, calc(100% - 32px));
+  max-height: calc(100dvh - 40px);
+  padding: 0;
+  margin: auto;
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 12px 48px #3a354126;
+  color: var(--app-text);
+}
+.dueno-dialog::backdrop {
+  background: #3a35416b;
+}
+.dueno-dialog .modal-header,
+.dueno-dialog .modal-body,
+.dueno-dialog > .modal-content > .modal-footer {
+  padding: 22px 26px;
+}
+.dueno-dialog .modal-header {
+  border-bottom-color: var(--app-border);
+}
+.dueno-dialog .modal-footer {
+  gap: 14px;
+  border-top-color: var(--app-border);
+  padding-top: 20px;
+}
+.dueno-dialog .modal-footer > .btn {
+  margin: 0;
+  padding: 9px 16px;
+}
+.dueno-dialog .modal-title {
+  font-size: 1.15rem !important;
+  font-weight: 600;
+}
+.form-error {
+  color: #c63349;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+@media (max-width: 700px) {
+  .duenos-page {
+    padding: 26px 14px;
+  }
+  .page-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .table {
+    min-width: 780px;
+  }
+}
+.btn-warning {
+  --bs-btn-color: #382b00;
+  --bs-btn-bg: #ffca28;
+  --bs-btn-border-color: #ffca28;
+  --bs-btn-hover-color: #382b00;
+  --bs-btn-hover-bg: #f2b900;
+  --bs-btn-hover-border-color: #f2b900;
+  --bs-btn-active-bg: #e5ad00;
+  --bs-btn-active-border-color: #e5ad00;
+  --bs-btn-disabled-bg: #ffca28;
+  --bs-btn-disabled-border-color: #ffca28;
+  --bs-btn-focus-shadow-rgb: 255, 202, 40;
+}
+.btn-danger {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #d32f2f;
+  --bs-btn-border-color: #d32f2f;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #b71c1c;
+  --bs-btn-hover-border-color: #b71c1c;
+  --bs-btn-active-bg: #a71919;
+  --bs-btn-active-border-color: #a71919;
+  --bs-btn-focus-shadow-rgb: 211, 47, 47;
+}

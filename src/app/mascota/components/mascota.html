@@ -1,0 +1,147 @@
+<section class="duenos-page">
+  <!-- 1. Título y botón para abrir el registro -->
+  <header class="page-heading">
+    <h1>Mascotas</h1>
+    <button type="button" class="btn btn-primary" (click)="abrirRegistro()">
+      <i class="bi bi-plus-lg" aria-hidden="true"></i>
+      Registrar nuevo
+    </button>
+  </header>
+
+  <!-- 2. Buscador -->
+  <label for="buscar-mascotas" class="visually-hidden">Buscar mascotas</label>
+  <div class="input-group table-search">
+    <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
+    <input id="buscar-mascotas" type="search" class="form-control" [(ngModel)]="busqueda" (ngModelChange)="pagina = 1" placeholder="Nombre, especie, raza o dueño"
+        autocomplete="off" />
+  </div>
+
+  <!-- 3. Tabla de registros -->
+  <section class="panel" aria-label="Mascotas registradas">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle mb-0">
+        <caption class="visually-hidden">Mascotas registradas y acciones disponibles</caption>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Especie</th>
+            <th scope="col">Raza</th>
+            <th scope="col">Edad</th>
+            <th scope="col">Sexo</th>
+            <th scope="col">Dueño</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let mascota of mascotasFiltradas | paginar: pagina : porPagina; let i = index">
+            <th scope="row">{{ (pagina - 1) * porPagina + i + 1 }}</th>
+            <td>{{ mascota.nombre }}</td>
+            <td>{{ mascota.especie }}</td>
+            <td>{{ mascota.raza }}</td>
+            <td>{{ mascota.edad | edadMascota }}</td>
+            <td>{{ mascota.sexo }}</td>
+            <td>{{ nombreDueno(mascota.duenoId) }}</td>
+            <td>
+              <div class="actions">
+                <button type="button" class="btn btn-warning btn-sm" title="Actualizar" [attr.aria-label]="'Actualizar a ' + mascota.nombre"
+                    (click)="editarMascota(mascota)">
+                  <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" title="Eliminar" [attr.aria-label]="'Eliminar a ' + mascota.nombre"
+                    (click)="confirmarEliminacion(mascota)">
+                  <i class="bi bi-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="mascotasFiltradas.length === 0">
+            <td colspan="8" class="empty-state">
+              {{ mensajeVacio }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      <app-paginacion [total]="mascotasFiltradas.length" [porPagina]="porPagina" [(pagina)]="pagina" />
+    </div>
+  </section>
+</section>
+
+<!-- Formulario del modal: sirve para registrar y actualizar -->
+<dialog #modalMascota class="dueno-dialog" aria-labelledby="mascota-title">
+  <div class="modal-content border-0">
+    <div class="modal-header">
+      <h2 id="mascota-title" class="modal-title">
+        {{ datosMascota.id === 0 ? 'Registrar mascota' : 'Editar mascota' }}
+      </h2>
+      <button type="button" class="btn-close" aria-label="Cerrar formulario" (click)="cerrarModal()"></button>
+    </div>
+    <div class="modal-body">
+      <!-- ngModel conecta cada campo con el objeto de datos del componente -->
+      <form #formulario="ngForm" (ngSubmit)="registrarMascota(formulario.valid ?? false)" novalidate>
+        <div class="mb-3">
+          <!-- Campo: nombre -->
+          <label for="nombre" class="form-label">Nombre</label>
+          <input id="nombre" class="form-control" name="nombre" [(ngModel)]="datosMascota.nombre" required pattern=".*\S.*" maxlength="60" />
+        </div>
+        <div class="row">
+          <div class="col-sm-6 mb-3">
+            <!-- Campo: especie -->
+            <label for="especie" class="form-label">Especie</label>
+            <select id="especie" class="form-select" name="especie" [(ngModel)]="datosMascota.especie" required>
+              <option value="" disabled>Seleccionar</option>
+              <option *ngFor="let especie of especies" [value]="especie">{{ especie }}</option>
+            </select>
+          </div>
+          <div class="col-sm-6 mb-3">
+            <!-- Campo: sexo -->
+            <label for="sexo" class="form-label">Sexo</label>
+            <select id="sexo" class="form-select" name="sexo" [(ngModel)]="datosMascota.sexo" required>
+              <option value="" disabled>Seleccionar</option>
+              <option>Macho</option>
+              <option>Hembra</option>
+            </select>
+          </div>
+        </div>
+        <div *ngIf="datosMascota.especie === 'Otro'" class="mb-3">
+          <!-- Campo: especie escrita a mano, solo cuando se elige "Otro" -->
+          <label for="especieOtra" class="form-label">Escribe la especie</label>
+          <input id="especieOtra" class="form-control" name="especieOtra" [(ngModel)]="especieOtra" required pattern=".*\S.*" maxlength="40"
+              placeholder="Ej. Hámster, tortuga, iguana" />
+        </div>
+        <div class="mb-3">
+          <!-- Campo: raza -->
+          <label for="raza" class="form-label">Raza</label>
+          <input id="raza" class="form-control" name="raza" [(ngModel)]="datosMascota.raza" required pattern=".*\S.*" maxlength="80" />
+        </div>
+        <div class="mb-3">
+          <!-- Campo: edad -->
+          <label for="edad" class="form-label">Edad en años</label>
+          <input id="edad" type="number" class="form-control" name="edad" [(ngModel)]="datosMascota.edad" required min="0" max="100" step="0.1" />
+        </div>
+        <div class="mb-4">
+          <!-- Campo: duenoId -->
+          <label for="duenoId" class="form-label">Dueño</label>
+          <select id="duenoId" class="form-select" name="duenoId" [(ngModel)]="datosMascota.duenoId" required>
+            <option [ngValue]="null" disabled>Seleccionar</option>
+            <option *ngFor="let dueno of duenoService.duenos" [ngValue]="dueno.id">
+              {{ dueno.nombres }} {{ dueno.apellidos }} — {{ dueno.dni }}
+            </option>
+          </select>
+        </div>
+        <!-- Cancelar cierra el modal; guardar envía el formulario -->
+        <div class="modal-footer px-0 pb-0">
+          <button type="button" class="btn btn-outline-secondary" (click)="cerrarModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn" [class.btn-primary]="datosMascota.id === 0" [class.btn-warning]="datosMascota.id !== 0"
+              [disabled]="!formulario.valid">
+            {{ datosMascota.id === 0 ? 'Registrar mascota' : 'Actualizar mascota' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</dialog>
